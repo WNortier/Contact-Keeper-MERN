@@ -1,9 +1,13 @@
 import React from 'react';
+import Contacts from '../contacts/Contacts';
 
 export const Home = () => {
   return (
-    <div>
-      <h1>This is the home page</h1>
+    <div className="grid-2">
+      <div></div>
+      <div>
+        <Contacts></Contacts>
+      </div>
     </div>
   );
 };
