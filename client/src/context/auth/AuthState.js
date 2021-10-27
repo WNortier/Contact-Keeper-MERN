@@ -3,6 +3,7 @@ import { NIL, v4 as uuid } from 'uuid';
 import axios from 'axios';
 import AuthContext from './authContext';
 import AuthReducer from './authReducer';
+import setAuthToken from '../../utils/setAuthToken';
 import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
@@ -26,7 +27,22 @@ const AuthState = (props) => {
   const [state, dispatch] = useReducer(AuthReducer, initialState);
 
   // Load User
-  const loadUser = () => console.log('load user');
+  const loadUser = async () => {
+    console.log('load');
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
+
+    try {
+      const res = await axios.get('/api/auth');
+      dispatch({
+        type: USER_LOADED,
+        payload: res.data,
+      });
+    } catch (error) {
+      dispatch({ type: AUTH_ERROR });
+    }
+  };
 
   // Register User
   const register = async (formData) => {
@@ -38,8 +54,8 @@ const AuthState = (props) => {
 
     try {
       const res = await axios.post('/api/users', formData, config);
-      console.log(res.data);
       dispatch({ type: REGISTER_SUCCESS, payload: res.data });
+      loadUser();
     } catch (err) {
       dispatch({ type: REGISTER_FAIL, payload: err.response.data.msg });
     }
